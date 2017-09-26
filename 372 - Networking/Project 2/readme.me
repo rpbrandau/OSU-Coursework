@@ -1,0 +1,39 @@
+Riley Brandau
+CS372 - Project 2 readme
+
+~~~~~~~~~~\
+ftserver.c |
+~~~~~~~~~~/
+
+To Compile:  gcc ftserver.c -o <server_program_name>
+To Run:      server_program_name <port#> 
+Example:     server_program_name 30400
+
+Note:        port# must be between 1024 and 65535 
+
+To shutdown: ctrl+c
+
+
+
+~~~~~~~~~~~\
+ftclient.py |
+~~~~~~~~~~~/
+
+To make executable: chmod +x ftclient.py
+To get file list:   python ftclient.py <server_name> <server_port#> -l <client_port#>
+To get file:        python ftclient.py <server_name> <server_port#> -g <file_name.txt> <client_port#>
+
+file list example:  python ftclient.py flip1 30400 -l 30401
+Retrive file ex:    python ftclient.py flip1 30400 -g longfile.txt 30401
+
+Note:               client_port# can not be the same as server_port#
+
+
+
+~~~~~~~~~~~~~~~\
+Important Notes |
+~~~~~~~~~~~~~~~/
+*Server and Client programs must be in different directories.
+*Server and Client programs must be ran on different server locations.
+*Eg: Server is on flip1, client can be on flip2 or flip3
+*Tested on flip1, flip2, flip3

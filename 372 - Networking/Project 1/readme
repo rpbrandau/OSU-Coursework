@@ -1,0 +1,24 @@
+README for Project 1 - Chat client/server
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+chatserv.py
+
+First we need to give it executable permissions: chmod +x chatserv.py
+
+Run the executable ./chatserv.py <server_port> <-- this doesn't work for some reason
+
+It can also be run by typing: python chatserv.py <server_port>  <-- this works just fine
+Example: "python chatserv.py 30050"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+chat_client.c
+
+To Compile: gcc chat_client.c -o chatclient
+
+To run: ./chatclient <host> <server_port>
+Example: "./chatclient flip2 30050"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Note: chat_client must send the first message.
+Note: tested on flip1, flip2, and flip3
+Resources: https://beej.us/guide/bgnet/ ; discussion Q&A ; https://pymotw.com/2/socket/tcp.html 
