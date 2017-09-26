@@ -1,0 +1,11 @@
+#author: Riley Brandau (well, except for the borrowed code. Sources cited.)
+#8/12/16
+#CS162 LabH
+
+
+#to compile: type "make all" or "make prog_R" and "make prog_I"
+
+#prog_R = recursive implementation
+#prog_I = iterative implementation
+
+
