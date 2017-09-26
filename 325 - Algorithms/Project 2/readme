@@ -1,0 +1,5 @@
+#To compile this program type: g++ -std=c++11 Project2_Group27_FINAL.cpp -o program
+
+#After compiling, to run program type: program coins
+
+#This will cause the program to use a coins.txt file for input

@@ -1,0 +1,5 @@
+#To compile this program type: g++ -std=c++11 Project1_Group27_v6.cpp -o prog
+
+#After compiling, to run program type: prog
+
+#A new file called "MSS_Results.txt" will be created in the same directory as the program.

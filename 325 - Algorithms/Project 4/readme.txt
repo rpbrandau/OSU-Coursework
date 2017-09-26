@@ -1,0 +1,1 @@
+#to run type:           python greedyTSP.py filename.txt
