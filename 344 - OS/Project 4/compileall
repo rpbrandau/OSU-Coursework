@@ -1,0 +1,10 @@
+#!/bin/bash
+#script for compiling all encryption client/server programs
+#and turning them into executables
+
+
+gcc -o keygen keygen.c -std=c99
+gcc -o otp_enc_d server.c -DENCRYPT=1 -std=c99
+gcc -o otp_dec_d server.c -DDECRYPT=1 -std=c99
+gcc -o otp_enc client.c -DENCRYPT=1 -std=c99
+gcc -o otp_dec client.c -DENCRYPT=1 -std=c99

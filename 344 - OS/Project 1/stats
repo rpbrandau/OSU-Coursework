@@ -1,0 +1,181 @@
+#!/bin/sh
+#Riley Brandau
+#CS 344 - Operating Systems
+#Project 1 - stats
+#Description: This script reads in integers/whole numbers and performs
+#             different statistical computations based on row or columns.
+#             Computations: Avgerage (mean) and Median.
+
+#lets user choose rows or columns by typing -r or -c instead of the whole word
+#program will then perform calculations based on that selection. The -o
+#is the boolean operator for OR.
+if [ "$#" -gt 2 -o "$#" -lt 1 ]
+   then
+      echo "Usage: stats {-rows|-cols}{file}" 1>&2
+      exit 1
+   fi
+
+if [[ "${1:0:2}" == '-r' || "${1:0:2}" == '-c' ]]
+   then
+      :
+   else
+      echo "Usage: stats {-rows|-cols}{file}" 1>&2
+      exit 1
+   fi
+
+
+#Create a variable with a process ID to store the file
+tempFile=$$temp
+
+#This trap catches disruptions, where 1 is Hang Up, 2 is a keyboard interrupt (like ctrl+c)
+# and 15 is a termination signal. If these are encountered, a forceful remove of $tempFile then an exit will occur.
+trap "rm -f $tempFile; exit 1" 1 2 15
+
+#checking to see if a file was provided and if it is readable
+#if the variable == 2, a file has been passed in. ! -r is checking if it is possible to read the file
+#-a is an "AND" operator, so the error message will only occur if a file was passed in AND it is not readable
+if [ "$#" -eq 2 -a ! -r "$2" ]
+   then
+      echo "stats: cannot read ${2}" 1>&2
+      exit 1
+   fi
+
+#read the data from the command line and store it in the temp variable file
+#if the input is equal to 1 (where 1 is the argument that corresponds to command line entry),
+#the loop will read in data from the command line and store it in the temp file.
+#if it is getting data from a file, it will overwrite what was previously stored in $tempFile. 
+if [ "$#" -eq 1 ]
+   then
+      while read line
+      do
+         echo $line >> $tempFile  
+      done
+   else
+      cat "$2" > $tempFile        
+   fi
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~CALCULATIONS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#If user selected rows...
+#This portion calculates the average and median of the rows
+#It does this by sorting the numbers into an array so that
+#the median can easily be determined. 
+if [[ "${1:0:2}" == '-r' ]]
+   then 
+      echo "Average -  Median"
+      while read -r line                                        #read in a row line by line
+      do                                                        #initializing variables
+         sum=0
+         avg=0
+         mid=0
+         min=0
+         median=0
+         idxCount=0
+         idx=0
+        
+         for i in $line                                         #loop through the line
+         do
+            sum=$(expr "$sum" + "$i")                           #adding the value from position i to sum
+            lineArr[$idxCount]=$i                               #creating an array that contains the value at i
+            idxCount=$(expr $idxCount + 1)                      #increment the index count
+         done
+        
+         avg=$((($sum + $idxCount / 2) / $idxCount))            #calculate the average by using the formula on the proj page
+        
+         for ((i=0; i<$idxCount-1; i++))                        #loop for the size of the array
+         do
+            min=${lineArr[$i]}                                  #set min to array's indexed value
+            idx=$i                                              #set index to the array index
+           
+            for((j=i+1; j<$idxCount; j++))                      #loop for the array again, not counting previous indexes
+            do
+               if ((lineArr[j]<min))                            #compare values after index to min
+                  then
+                     min=${lineArr[$j]}                         #if the value is less than the current min, set min to value at current index
+                     idx=$j                                     #update index
+                  fi
+            done
+           
+            tempVar=${lineArr[$i]}                              #temp variable to perform a swap of lineArr[i] with lineArr[idx]
+            lineArr[$i]=${lineArr[$idx]}                        
+            lineArr[$idx]=$tempVar
+         done
+        
+         mid=$(expr "$idxCount" / 2)                            #finding the mid index point
+         median=${lineArr[mid]}                                 #assigning the median
+         echo "$avg" " - " "$median"
+      done < $tempFile                                          #read in data from file
+   fi
+
+#If user selected columns...
+#This portion calculates the average and median of the columns.
+#  
+if [[ "${1:0:2}" == '-c' ]]                                     #columns were selected
+   then
+      colNum=0
+      totalCols=$(head -n 1 $tempFile | wc -w)                  #finding out the number of columns
+     
+      while [ $colNum -lt "$totalCols" ]                        #loop through columns
+      do                                                        #initialize variables
+         idxCount=0
+         sum=0
+         mid=0
+         median=0
+        
+         while read -r line                                     #process data a line at a time
+         do
+            lineArr=($line)                                     #put the input in a variable
+            colArr[$idxCount]=${lineArr[$colNum]}               #store the number at colNum in the column array
+            idxCount=$(expr "$idxCount" + 1)                    #advance the index
+         done < $tempFile                                       #read in data from file
+        
+         for i in "${colArr[@]}"                                #loop through the column array
+         do
+            sum=$(expr "$sum" + "$i")                           #add each value in the array together
+         done
+        
+         avg=$((($sum + $idxCount / 2) / $idxCount))            #calculate the average
+         avgArr[$colNum]=$avg                                   #store the average in its own array
+        
+         for ((i=0; i<$idxCount - 1; i++))                      #start a loop for sorting the array
+         do
+            min=${colArr[$i]}                                   #set the min variable for comparisons
+            idx=$i                                              #keep track of the index
+           
+            for((j=i+1; j<$idxCount; j++))                      #comparison loop for elements past i
+            do
+               if ((colArr[j]<min))                             #compare min to value at current array index
+                  then
+                     min=${colArr[$j]}                          #store new min value
+                     idx=$j                                     #store new index value
+                  fi
+            done
+        
+         tempVar=${colArr[$i]}                                  #temp variable used for swapping colArr[i] with colArr[idx]
+         colArr[$i]=${colArr[$idx]}                             
+         colArr[$idx]=$tempVar
+         done
+        
+         mid=$(expr "$idxCount" / 2)                            #calculate the mid point index
+         median=${colArr[mid]}                                  #save median into variable
+         medArr=$[$colNum]=$median                              #store median value in its own array
+         colNum=$(expr $colNum + 1)                             #increment colNum by 1
+      done
+     
+      echo "Column Averages: "                                  #print results
+     
+      for i in "${avgArr[@]}"
+      do
+         echo "${i}"
+      done | column
+     
+      echo "Column Medians: "
+     
+      for i in "${medArr[@]}"
+      do
+         echo "${i}"
+      done | column
+   fi
+
+#Clean up temporary file
+rm -f $tempFile
+         
